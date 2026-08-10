@@ -35,5 +35,6 @@ Pillow==12.3.0
 bleach==6.4.0
 
 # Payments
+setuptools==80.9.0
 razorpay==1.4.2
 gunicorn==23.0.0
