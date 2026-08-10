@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1 data-aos="fade-up">Get in <span class="gradient-text">Touch</span></h1>
+        <p data-aos="fade-up" data-aos-delay="100">We'd love to hear from you.</p>
+    </div>
+</section>
+
+<section class="section-pad">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="glass-card p-4 p-md-5">
+                    <form method="POST" action="{{ url_for('main.contact') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-control" name="subject" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Message</label>
+                                <textarea class="form-control" name="message" rows="5" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-gradient w-100"><i class="fas fa-paper-plane me-2"></i>Send Message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5 text-center">
+            <div class="col-md-4" data-aos="fade-up"><div class="contact-box glass-card"><i class="fas fa-envelope"></i><h6>Email</h6><p class="mb-0">support@resumeaipro.com</p></div></div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100"><div class="contact-box glass-card"><i class="fas fa-phone"></i><h6>Phone</h6><p class="mb-0">+1 (555) 123-4567</p></div></div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200"><div class="contact-box glass-card"><i class="fas fa-map-marker-alt"></i><h6>Location</h6><p class="mb-0">San Francisco, CA</p></div></div>
+        </div>
+    </div>
+</section>
+{% endblock %}

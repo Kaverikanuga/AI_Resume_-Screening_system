@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}LinkedIn Report{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fab fa-linkedin me-2"></i>LinkedIn Report</h1>
+        <p>Generated on {{ report.created_at.strftime('%B %d, %Y') }}</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <!-- Scores -->
+        <div class="col-lg-4" data-aos="fade-up">
+            <div class="glass-card p-4 text-center h-100">
+                <h5 class="card-title"><i class="fas fa-tachometer-alt me-2"></i>LinkedIn Score</h5>
+                <div class="big-match-score">{{ report.linkedin_score }}%</div>
+                <hr>
+                <div class="text-start">
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Visibility</span><strong>{{ report.visibility_score }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-info" style="width: {{ report.visibility_score }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Recruiter Visibility</span><strong>{{ report.recruiter_visibility }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-success" style="width: {{ report.recruiter_visibility }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>SSI Score</span><strong>{{ report.ssi_score }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-warning" style="width: {{ report.ssi_score }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Profile Completeness</span><strong>{{ report.profile_completeness }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-primary" style="width: {{ report.profile_completeness }}%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Headline & About -->
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="card-title"><i class="fas fa-heading me-2"></i>Optimized Headline</h5>
+                <div class="suggestion-box glass-card p-3 mt-2">
+                    <i class="fas fa-quote-left text linkedin me-2"></i>{{ report.headline_suggestion }}
+                </div>
+            </div>
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-user-edit me-2"></i>Optimized About Section</h5>
+                <div class="suggestion-box glass-card p-3 mt-2">
+                    <p style="white-space: pre-line;" class="mb-0">{{ report.about_suggestion }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Suggestions -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-lightbulb me-2 text-warning"></i>Skills Suggestions</h5>
+                <ul class="analysis-list">
+                    {% for s in report.skills_suggestions %}
+                    <li><i class="fas fa-check-circle text-success me-2"></i>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Networking Tips -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-users me-2 text-info"></i>Networking Tips</h5>
+                <ul class="analysis-list">
+                    {% for tip in report.networking_tips %}
+                    <li><i class="fas fa-arrow-right text-info me-2"></i>{{ tip }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Improvement Tips -->
+        <div class="col-12" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Improvement Tips</h5>
+                <div class="row g-3">
+                    {% for tip in report.improvement_tips %}
+                    <div class="col-md-6">
+                        <div class="suggestion-item glass-card p-3"><i class="fas fa-arrow-right text-danger me-2"></i>{{ tip }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

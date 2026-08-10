@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-shield-alt me-2"></i>Admin Dashboard</h1>
+        <p>System management and analytics</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-lg-3" data-aos="fade-up">
+            <div class="stat-card glass-card p-3 text-center">
+                <div class="stat-icon bg-primary"><i class="fas fa-users"></i></div>
+                <div class="stat-number counter" data-target="{{ total_users }}">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="50">
+            <div class="stat-card glass-card p-3 text-center">
+                <div class="stat-icon bg-info"><i class="fas fa-file-alt"></i></div>
+                <div class="stat-number counter" data-target="{{ total_resumes }}">0</div>
+                <div class="stat-label">Total Resumes</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-card glass-card p-3 text-center">
+                <div class="stat-icon bg-success"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-number counter" data-target="{{ analyzed_resumes }}">0</div>
+                <div class="stat-label">Analyzed</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="150">
+            <div class="stat-card glass-card p-3 text-center">
+                <div class="stat-icon bg-warning"><i class="fas fa-exchange-alt"></i></div>
+                <div class="stat-number counter" data-target="{{ total_matches }}">0</div>
+                <div class="stat-label">Job Matches</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Averages -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-chart-line me-2"></i>Average Scores</h5>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="small text-muted">Overall ATS</div>
+                        <div class="big-match-score">{{ avg_overall }}%</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="small text-muted">Keyword</div>
+                        <div class="big-match-score">{{ avg_keyword }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-star me-2 text-warning"></i>Top Skills</h5>
+                <div class="skill-tags">
+                    {% for skill in top_skills %}
+                    <span class="skill-tag">{{ skill.name }} <small>({{ skill.count }})</small></span>
+                    {% else %}
+                    <span class="text-muted">No data yet</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Users & Resumes -->
+    <div class="row g-4">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-users me-2"></i>Recent Users</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover admin-table">
+                        <thead><tr><th>User</th><th>Email</th><th>Date</th></tr></thead>
+                        <tbody>
+                            {% for u in recent_users %}
+                            <tr>
+                                <td>
+                                    <div class="avatar-sm">{{ u.initials }}</div> {{ u.username }}
+                                    {% if u.is_admin %}<span class="badge bg-warning text-dark">Admin</span>{% endif %}
+                                </td>
+                                <td class="small">{{ u.email }}</td>
+                                <td class="small">{{ u.created_at.strftime('%b %d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-file-alt me-2"></i>Recent Uploads</h5>
+                <div class="report-list">
+                    {% for r in recent_resumes %}
+                    <div class="report-item glass-card p-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><i class="fas fa-file-pdf me-1"></i>{{ r.original_name }}</strong>
+                            <div class="small text-muted">{{ r.created_at.strftime('%b %d, %Y') }} · {{ r.status }}</div>
+                        </div>
+                        {% if r.analysis %}<span class="match-badge">{{ r.analysis.overall_score }}%</span>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

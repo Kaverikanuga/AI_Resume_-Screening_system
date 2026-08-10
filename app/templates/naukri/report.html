@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Naukri Report{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-briefcase me-2"></i>Naukri Report</h1>
+        <p>Generated on {{ report.created_at.strftime('%B %d, %Y') }}</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <!-- Scores -->
+        <div class="col-lg-4" data-aos="fade-up">
+            <div class="glass-card p-4 text-center h-100">
+                <h5 class="card-title"><i class="fas fa-tachometer-alt me-2"></i>Resume Score</h5>
+                <div class="big-match-score">{{ report.resume_score }}%</div>
+                <hr>
+                <div class="text-start">
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Keyword Density</span><strong>{{ report.keyword_density }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-info" style="width: {{ report.keyword_density }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Search Visibility</span><strong>{{ report.search_visibility }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-success" style="width: {{ report.search_visibility }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Recruiter Ranking</span><strong>{{ report.recruiter_ranking }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-warning" style="width: {{ report.recruiter_ranking }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Profile Completeness</span><strong>{{ report.profile_completeness }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-primary" style="width: {{ report.profile_completeness }}%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Skills -->
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="card-title"><i class="fas fa-star me-2 text-warning"></i>Top Skills</h5>
+                <div class="skill-tags">
+                    {% for skill in report.top_skills %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% else %}
+                    <span class="text-muted">No skills detected</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="glass-card p-4">
+                <h5 class="card-title text-danger"><i class="fas fa-key me-2"></i>Missing Keywords</h5>
+                <div class="skill-tags">
+                    {% for kw in report.missing_keywords %}
+                    <span class="skill-tag missing">{{ kw }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Improvement Suggestions -->
+        <div class="col-12" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title text-info"><i class="fas fa-lightbulb me-2"></i>Improvement Suggestions</h5>
+                <div class="row g-3">
+                    {% for s in report.improvement_suggestions %}
+                    <div class="col-md-6">
+                        <div class="suggestion-item glass-card p-3"><i class="fas fa-arrow-right text-info me-2"></i>{{ s }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

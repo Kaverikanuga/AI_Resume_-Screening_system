@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% block title %}AI Resume Screening & Career Optimization{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content" data-aos="fade-right">
+                <span class="hero-badge"><i class="fas fa-sparkles"></i> AI-Powered ATS Optimization</span>
+                <h1 class="hero-title">Transform Your Resume Into a <span class="gradient-text">Job Magnet</span></h1>
+                <p class="hero-subtitle">Analyze, optimize, and perfect your resume with advanced AI. Get instant ATS scores, detailed insights, and career guidance used by top recruiters.</p>
+                <div class="hero-cta">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-gradient btn-lg"><i class="fas fa-rocket me-2"></i>Get Started Free</a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg"><i class="fas fa-sign-in-alt me-2"></i>Sign In</a>
+                </div>
+                <div class="hero-stats mt-4">
+                    <div class="stat-item">
+                        <div class="stat-value count-up" data-target="50000">0</div>
+                        <div class="stat-label">Resumes Analyzed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value count-up" data-target="98">0</div>
+                        <div class="stat-label">% Satisfaction</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value count-up" data-target="25000">0</div>
+                        <div class="stat-label">Jobs Matched</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 hero-visual" data-aos="fade-left">
+                <div class="hero-dashboard-card glass-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5>ATS Score</h5>
+                        <span class="health-badge excellent">Excellent</span>
+                    </div>
+                    <div class="score-gauge">
+                        <svg viewBox="0 0 200 200">
+                            <circle cx="100" cy="100" r="80" class="gauge-bg"/>
+                            <circle cx="100" cy="100" r="80" class="gauge-fill" style="stroke-dashoffset: 120;"/>
+                            <text x="100" y="100" class="gauge-mini" text-anchor="middle" dy="35">92/100</text>
+                        </svg>
+                    </div>
+                    <div class="row text-center mt-3">
+                        <div class="col-4"><div class="mini-score">92</div><small>Overall</small></div>
+                        <div class="col-4"><div class="mini-score">88</div><small>Keywords</small></div>
+                        <div class="col-4"><div class="mini-score">95</div><small>Format</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section section-pad">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-kicker">Features</span>
+            <h2>Everything You Need to <span class="gradient-text">Stand Out</span></h2>
+            <p>Powerful AI tools to help you land your dream job.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                    <h4>Resume Analysis</h4>
+                    <p>Deep AI analysis of your resume with comprehensive ATS scoring across 8 dimensions.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fas fa-percentage"></i></div>
+                    <h4>Job Match</h4>
+                    <p>Instantly match your resume against job descriptions to see your fit percentage.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fab fa-linkedin"></i></div>
+                    <h4>LinkedIn Optimizer</h4>
+                    <p>Optimize your LinkedIn profile with AI-generated headlines, about sections, and tips.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fas fa-briefcase"></i></div>
+                    <h4>Naukri Optimizer</h4>
+                    <p>Improve your Naukri profile visibility and recruiter ranking with smart recommendations.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <h4>AI Career Assistant</h4>
+                    <p>Get personalized career roadmaps, skill recommendations, and interview preparation.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card glass-card">
+                    <div class="feature-icon"><i class="fas fa-file-invoice"></i></div>
+                    <h4>Resume Builder</h4>
+                    <p>Create professional resumes with modern templates and live preview and PDF export.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-section section-pad">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-kicker">How It Works</span>
+            <h2>Three Simple <span class="gradient-text">Steps</span></h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="step-card glass-card text-center">
+                    <div class="step-number">1</div>
+                    <div class="step-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h5>Upload Resume</h5>
+                    <p>Upload your PDF resume with our easy drag-and-drop interface.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-card glass-card text-center">
+                    <div class="step-number">2</div>
+                    <div class="step-icon"><i class="fas fa-robot"></i></div>
+                    <h5>AI Analysis</h5>
+                    <p>Our AI engine extracts data and scores your resume across every dimension.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-card glass-card text-center">
+                    <div class="step-number">3</div>
+                    <div class="step-icon"><i class="fas fa-chart-line"></i></div>
+                    <h5>Get Insights</h5>
+                    <p>Receive actionable insights, suggestions, and optimization reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonial-section section-pad">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-kicker">Testimonials</span>
+            <h2>Loved by <span class="gradient-text">Professionals</span></h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="testimonial-card glass-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"The ATS analysis helped me understand why I wasn't getting calls. After optimizing, I got 5 interview invitations in a week!"</p>
+                    <div class="testimonial-user">
+                        <img src="https://ui-avatars.com/api/?name=Priya" alt="Priya">
+                        <div><strong>Priya Sharma</strong><small>Software Engineer</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-card glass-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"The career assistant gave me a clear roadmap. I never felt lost about what to learn next or which certifications to pursue."</p>
+                    <div class="testimonial-user">
+                        <img src="https://ui-avatars.com/api/?name=Rahul" alt="Rahul">
+                        <div><strong>Rahul Verma</strong><small>Data Analyst</small></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card glass-card">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"As a final year student, the placement preparation tools were a lifesaver. The job match feature is brilliantly accurate."</p>
+                    <div class="testimonial-user">
+                        <img src="https://ui-avatars.com/api/?name=Ananya" alt="Ananya">
+                        <div><strong>Ananya Patel</strong><small>B.Tech Student</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing-section section-pad">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-kicker">Pricing</span>
+            <h2>Simple, <span class="gradient-text">Transparent</span> Pricing</h2>
+        </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="pricing-card">
+                    <h4>Free</h4>
+                    <div class="price">₹0<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 3 Resume Analyses</li>
+                        <li><i class="fas fa-check"></i> Basic ATS Score</li>
+                        <li><i class="fas fa-check"></i> 2 Job Matches</li>
+                        <li class="muted"><i class="fas fa-times"></i> PDF Reports</li>
+                        <li class="muted"><i class="fas fa-times"></i> Advanced Tools</li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary w-100">Get Started</a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card featured">
+                    <span class="featured-badge">Most Popular</span>
+<h4>Pro</h4>
+                    <div class="price">₹59<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Unlimited Analyses</li>
+                        <li><i class="fas fa-check"></i> Advanced ATS Reports</li>
+                        <li><i class="fas fa-check"></i> Unlimited Job Matches</li>
+                        <li><i class="fas fa-check"></i> PDF Reports & Export</li>
+                        <li><i class="fas fa-check"></i> Resume Builder Templates</li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-gradient w-100">Choose Pro</a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card">
+<h4>Business</h4>
+                    <div class="price">₹99<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Team Accounts</li>
+                        <li><i class="fas fa-check"></i> Bulk Analysis</li>
+                        <li><i class="fas fa-check"></i> Admin Panel</li>
+                        <li><i class="fas fa-check"></i> API Access</li>
+                        <li><i class="fas fa-check"></i> Priority Support</li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary w-100">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section section-pad">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-kicker">FAQ</span>
+            <h2>Frequently Asked <span class="gradient-text">Questions</span></h2>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8" data-aos="fade-up">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">What is an ATS score?</button></h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion"><div class="accordion-body">An ATS (Applicant Tracking System) score measures how well your resume performs with the automated screening software that most companies use to filter candidates. A higher score means your resume is more likely to pass the initial screening.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">How does the AI analysis work?</button></h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Our AI extracts information from your PDF resume, identifies skills, experience, education, and more using natural language processing. It then scores your resume across multiple dimensions and generates personalized recommendations.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Is my data secure?</button></h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body">Absolutely. Your resumes and personal data are stored securely with strong encryption. We never share your information with third parties without your consent.</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card glass-card" data-aos="zoom-in">
+            <h2>Ready to Supercharge Your Career?</h2>
+            <p>Join thousands of professionals who landed their dream jobs with ResumeAI Pro.</p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-gradient btn-lg"><i class="fas fa-rocket me-2"></i>Start Free Today</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

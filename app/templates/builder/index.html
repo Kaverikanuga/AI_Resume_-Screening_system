@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Resume Builder{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-file-alt me-2"></i>Resume Builder</h1>
+        <p>Create a professional resume with modern templates</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <div class="col-lg-7" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-edit me-2"></i>Resume Details</h5>
+                <form method="POST" action="{{ url_for('builder.index') }}" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Template</label>
+                            {{ form.template(class='form-select') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            {{ form.full_name(class='form-control', placeholder='John Doe') }}
+                            {% for error in form.full_name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Professional Title</label>
+                            {{ form.job_title(class='form-control', placeholder='Senior Software Engineer') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ form.email(class='form-control', placeholder='john@example.com') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            {{ form.phone(class='form-control', placeholder='+1 555 123 4567') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Address</label>
+                            {{ form.address(class='form-control', placeholder='City, State') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">LinkedIn</label>
+                            {{ form.linkedin(class='form-control', placeholder='linkedin.com/in/johndoe') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">GitHub</label>
+                            {{ form.github(class='form-control', placeholder='github.com/johndoe') }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Website</label>
+                            {{ form.website(class='form-control', placeholder='johndoe.com') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Professional Summary</label>
+                            {{ form.summary(class='form-control', rows='3', placeholder='A brief summary of your experience and strengths...') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Skills (comma separated)</label>
+                            {{ form.skills(class='form-control', placeholder='Python, JavaScript, React, SQL') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Education (one per line)</label>
+                            {{ form.education(class='form-control', rows='3', placeholder='B.Tech in Computer Science, XYZ University, 2020') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Work Experience (one per line)</label>
+                            {{ form.experience(class='form-control', rows='3', placeholder='Software Engineer, ABC Corp, 2021-Present') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Projects (one per line)</label>
+                            {{ form.projects(class='form-control', rows='3', placeholder='E-commerce Website - React, Node.js') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Certifications (one per line)</label>
+                            {{ form.certifications(class='form-control', rows='2', placeholder='AWS Certified Solutions Architect') }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Languages (comma separated)</label>
+                            {{ form.languages(class='form-control', placeholder='English, Hindi, Spanish') }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-gradient w-100"><i class="fas fa-magic me-2"></i>Generate Resume</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="card-title"><i class="fas fa-th-large me-2"></i>Template Gallery</h5>
+                <p class="text-muted small">Choose from 5 professional templates</p>
+                <a href="{{ url_for('builder.templates') }}" class="btn btn-outline-light btn-sm"><i class="fas fa-eye me-1"></i>View Templates</a>
+            </div>
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>Tips</h5>
+                <ul class="analysis-list small">
+                    <li><i class="fas fa-check text-success me-2"></i>Keep resume to 1-2 pages</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Use action verbs</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Quantify achievements</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Tailor to job description</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Proofread for errors</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

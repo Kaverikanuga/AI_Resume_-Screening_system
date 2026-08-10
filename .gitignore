@@ -1,0 +1,25 @@
+# Environment variables (secrets)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Flask / Database
+instance/
+*.db
+*.sqlite3
+
+# Uploads & Reports
+uploads/
+reports/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

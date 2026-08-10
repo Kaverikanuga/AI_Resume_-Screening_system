@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Project Documentation{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-book me-2"></i>Project Documentation</h1>
+        <p>AI Resume Screening System — Final Year Engineering Project</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="glass-card p-4 mb-4" data-aos="fade-up">
+        <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>Project Overview</h5>
+        <p>The AI Resume Screening System is a full-stack, production-grade SaaS platform that uses artificial intelligence and natural language processing to analyze resumes, evaluate ATS (Applicant Tracking System) compatibility, match candidates to job descriptions, optimize LinkedIn and Naukri profiles, and provide AI-powered career guidance.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-rocket me-2"></i>Key Features</h5>
+                <ul class="analysis-list">
+                    <li><i class="fas fa-check-circle text-success me-2"></i>AI-powered resume parsing & analysis</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>ATS score & resume health assessment</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Job description matching</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>LinkedIn & Naukri profile optimization</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>AI career assistant chatbot</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Resume builder with 5 templates</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Professional PDF reports</li>
+                    <li><i class="fas fa-check-circle text-success me-2"></i>Admin panel & analytics</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-layer-group me-2"></i>Tech Stack</h5>
+                <div class="tech-stack">
+                    <span class="skill-tag">Flask</span>
+                    <span class="skill-tag">SQLAlchemy</span>
+                    <span class="skill-tag">SQLite</span>
+                    <span class="skill-tag">Flask-Login</span>
+                    <span class="skill-tag">Flask-WTF</span>
+                    <span class="skill-tag">PyPDF2</span>
+                    <span class="skill-tag">pdfplumber</span>
+                    <span class="skill-tag">spaCy</span>
+                    <span class="skill-tag">NLTK</span>
+                    <span class="skill-tag">scikit-learn</span>
+                    <span class="skill-tag">pandas</span>
+                    <span class="skill-tag">ReportLab</span>
+                    <span class="skill-tag">Bootstrap 5</span>
+                    <span class="skill-tag">Chart.js</span>
+                    <span class="skill-tag">AOS</span>
+                    <span class="skill-tag">Font Awesome</span>
+                </div>
+                <h5 class="card-title mt-4"><i class="fas fa-project-diagram me-2"></i>Architecture</h5>
+                <p class="small">Model-View-Controller (MVC) pattern with modular Flask blueprints. The AI engine is separated into parser, extractor, scorer, and optimizer modules for clean, reusable architecture. Redis-style service layer abstracts business logic.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

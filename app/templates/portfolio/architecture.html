@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}System Architecture{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-project-diagram me-2"></i>System Architecture</h1>
+        <p>High-level architecture of the AI Resume Screening System</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="glass-card p-4 mb-4" data-aos="fade-up">
+        <h5 class="card-title"><i class="fas fa-cubes me-2"></i>Architecture Overview</h5>
+        <div class="arch-diagram">
+            <div class="arch-layer">
+                <div class="arch-box frontend">Frontend<br><small>HTML5 · CSS3 · Bootstrap · Chart.js · JS</small></div>
+            </div>
+            <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+            <div class="arch-layer">
+                <div class="arch-box app">Flask Application Layer<br><small>15 Blueprints · Routes · Forms · Auth</small></div>
+            </div>
+            <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+            <div class="arch-layer">
+                <div class="arch-box ai">AI / ML Engine<br><small>Parser · Extractor · Scorer · Job Matcher · Optimizers</small></div>
+            </div>
+            <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+            <div class="arch-layer">
+                <div class="arch-box data">Data Layer<br><small>SQLAlchemy · SQLite · Models</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-database me-2"></i>ER Diagram</h5>
+                <div class="tech-stack">
+                    <p class="small mb-2">Core entities and relationships:</p>
+                    <ul class="analysis-list small">
+                        <li><strong>User</strong> 1—N <strong>Resume</strong></li>
+                        <li><strong>User</strong> 1—N <strong>JobMatch</strong></li>
+                        <li><strong>User</strong> 1—N <strong>LinkedInReport</strong></li>
+                        <li><strong>User</strong> 1—N <strong>NaukriReport</strong></li>
+                        <li><strong>User</strong> 1—N <strong>CareerSuggestion</strong></li>
+                        <li><strong>User</strong> 1—N <strong>Notification / ActivityLog</strong></li>
+                        <li><strong>Resume</strong> 1—1 <strong>AnalysisResult</strong></li>
+                        <li><strong>Resume</strong> 1—N <strong>JobMatch</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-sitemap me-2"></i>Flowchart</h5>
+                <div class="flowchart">
+                    <div class="flow-step">User Uploads Resume</div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                    <div class="flow-step">PDF Text Extraction</div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                    <div class="flow-step">Entity & Skill Extraction</div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                    <div class="flow-step">ATS Scoring Engine</div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                    <div class="flow-step">Report & Recommendations</div>
+                    <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                    <div class="flow-step">Job Match / Optimizers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

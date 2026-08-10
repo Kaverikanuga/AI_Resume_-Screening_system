@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Upload Resume{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Upload Resume</h1>
+        <p>Drag & drop your PDF resume for AI analysis</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card p-4 p-md-5" data-aos="fade-up">
+                <form id="upload-form" method="POST" action="{{ url_for('upload.upload') }}" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="drop-zone" id="drop-zone">
+                        <div class="drop-zone-content">
+                            <div class="drop-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h4>Drag & Drop Your Resume</h4>
+                            <p class="text-muted">or</p>
+                            <label for="resume-file" class="btn btn-gradient"><i class="fas fa-folder-open me-2"></i>Browse Files</label>
+                            <input type="file" id="resume-file" name="resume" accept="application/pdf" hidden>
+                            <p class="small text-muted mt-3"><i class="fas fa-info-circle me-1"></i>PDF format, maximum 16MB</p>
+                        </div>
+                        <div class="file-preview d-none" id="file-preview">
+                            <div class="preview-card">
+                                <div class="preview-icon"><i class="fas fa-file-pdf"></i></div>
+                                <div class="preview-info">
+                                    <strong id="file-name"></strong>
+                                    <div class="small text-muted"><span id="file-size"></span> • <span id="file-pages"></span> pages • <span id="file-words"></span> words</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-light" id="remove-file"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="progress mt-3 d-none" id="upload-progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress-bar" style="width: 0%">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-gradient w-100 mt-4 d-none" id="submit-btn">
+                        <i class="fas fa-robot me-2"></i>Analyze Resume
+                    </button>
+                </form>
+            </div>
+
+            <!-- How it works -->
+            <div class="row g-3 mt-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-md-4">
+                    <div class="upload-step glass-card p-3 text-center">
+                        <i class="fas fa-cloud-upload-alt mb-2 fs-3 text-primary"></i>
+                        <h6>1. Upload</h6>
+                        <small class="text-muted">Drag & drop your PDF resume</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="upload-step glass-card p-3 text-center">
+                        <i class="fas fa-brain mb-2 fs-3 text-info"></i>
+                        <h6>2. AI Analysis</h6>
+                        <small class="text-muted">Our engine extracts & scores</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="upload-step glass-card p-3 text-center">
+                        <i class="fas fa-chart-line mb-2 fs-3 text-success"></i>
+                        <h6>3. Get Insights</h6>
+                        <small class="text-muted">View ATS score & recommendations</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Pricing{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1 data-aos="fade-up">Simple, <span class="gradient-text">Transparent</span> Pricing</h1>
+        <p data-aos="fade-up" data-aos-delay="100">Choose the plan that fits your career goals.</p>
+    </div>
+</section>
+
+<section class="section-pad" data-logged-in="{{ 'true' if current_user.is_authenticated else 'false' }}">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="pricing-card">
+                    <h4>Free</h4>
+                    <div class="price">₹0<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 3 Resume Analyses</li>
+                        <li><i class="fas fa-check"></i> Basic ATS Score</li>
+                        <li><i class="fas fa-check"></i> 2 Job Matches</li>
+                        <li class="muted"><i class="fas fa-times"></i> PDF Reports</li>
+                        <li class="muted"><i class="fas fa-times"></i> Resume Builder</li>
+                    </ul>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary w-100">Get Started</a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card featured">
+                    <span class="featured-badge">Most Popular</span>
+                    <h4>Pro</h4>
+                    <div class="price">₹59<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Unlimited Analyses</li>
+                        <li><i class="fas fa-check"></i> Advanced ATS Reports</li>
+                        <li><i class="fas fa-check"></i> Unlimited Job Matches</li>
+                        <li><i class="fas fa-check"></i> PDF Reports & Export</li>
+                        <li><i class="fas fa-check"></i> Resume Builder Templates</li>
+                    </ul>
+<button type="button" class="btn btn-gradient w-100" data-start-checkout data-plan="pro">Choose Pro</button>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card">
+                    <h4>Business</h4>
+                    <div class="price">₹99<span>/month</span></div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Team Accounts</li>
+                        <li><i class="fas fa-check"></i> Bulk Analysis</li>
+                        <li><i class="fas fa-check"></i> Admin Panel</li>
+                        <li><i class="fas fa-check"></i> API Access</li>
+                        <li><i class="fas fa-check"></i> Priority Support</li>
+                    </ul>
+<a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary w-100">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}

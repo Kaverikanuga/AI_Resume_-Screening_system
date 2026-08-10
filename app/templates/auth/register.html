@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-6">
+                <div class="auth-card glass-card" data-aos="fade-up">
+                    <div class="auth-header">
+                        <div class="auth-logo"><i class="fas fa-brain"></i></div>
+                        <h2>Create Your Account</h2>
+                        <p>Start your journey to a better resume</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+                        {{ form.hidden_tag() }}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Username</label>
+                                {{ form.username(class='form-control', placeholder='johndoe') }}
+                                {% for error in form.username.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                {{ form.email(class='form-control', placeholder='you@example.com') }}
+                                {% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name(class='form-control', placeholder='John') }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name(class='form-control', placeholder='Doe') }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Password</label>
+                                {{ form.password(class='form-control', placeholder='Minimum 8 characters') }}
+                                {% for error in form.password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Confirm Password</label>
+                                {{ form.confirm_password(class='form-control', placeholder='Re-enter password') }}
+                                {% for error in form.confirm_password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    {{ form.terms(class='form-check-input') }}
+                                    <label class="form-check-label">I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a></label>
+                                </div>
+                                {% for error in form.terms.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-gradient w-100"><i class="fas fa-user-plus me-2"></i>Create Account</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="auth-footer">
+                        <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}" class="text-decoration-none">Sign In</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

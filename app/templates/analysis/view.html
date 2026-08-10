@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Analysis Report{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Analysis Report</h1>
+        <p>{{ resume.original_name }}</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <!-- Top Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2" data-aos="fade-up">
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('analysis.job_match', resume_id=resume.id) }}" class="btn btn-gradient"><i class="fas fa-percentage me-2"></i>Job Match</a>
+            <a href="{{ url_for('reports.analysis_report', resume_id=resume.id) }}" class="btn btn-outline-light"><i class="fas fa-file-pdf me-2"></i>View Report</a>
+            <a href="{{ url_for('reports.download_analysis', resume_id=resume.id) }}" class="btn btn-outline-success"><i class="fas fa-download me-2"></i>Download PDF</a>
+        </div>
+        <form method="POST" action="{{ url_for('analysis.reanalyze', resume_id=resume.id) }}" class="d-inline">
+            <button class="btn btn-outline-warning"><i class="fas fa-redo me-2"></i>Re-analyze</button>
+        </form>
+    </div>
+
+    <!-- Hero Score Card -->
+    <div class="glass-card p-4 mb-4" data-aos="fade-up">
+        <div class="row align-items-center">
+            <div class="col-lg-4 text-center">
+                <div class="score-gauge large">
+                    <svg viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="80" class="gauge-bg"/>
+                        <circle cx="100" cy="100" r="80" class="gauge-fill {{ 'gauge-excellent' if analysis.overall_score >= 80 else 'gauge-good' if analysis.overall_score >= 60 else 'gauge-average' if analysis.overall_score >= 40 else 'gauge-poor' }}" data-score="{{ analysis.overall_score }}" style="stroke-dashoffset: 502;"/>
+                        <text x="100" y="100" class="gauge-value" text-anchor="middle" dy="35">{{ analysis.overall_score }}%</text>
+                    </svg>
+                </div>
+                <h3 class="mt-2">Overall ATS Score</h3>
+                <span class="health-badge {{ analysis.health_status }}">{{ analysis.health_status|capitalize }}</span>
+            </div>
+            <div class="col-lg-8">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.keyword_score }}</div>
+                            <small>Keyword</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.formatting_score }}</div>
+                            <small>Formatting</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.readability_score }}</div>
+                            <small>Readability</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.grammar_score }}</div>
+                            <small>Grammar</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.professional_score }}</div>
+                            <small>Professional</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="score-box glass-card p-3 text-center">
+                            <div class="score-value">{{ analysis.strength_score }}</div>
+                            <small>Strength</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Extracted Info -->
+        <div class="col-lg-5" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-user me-2"></i>Candidate Information</h5>
+                <div class="info-list">
+                    <div class="info-item"><span>Name</span><strong>{{ analysis.candidate_name or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>Email</span><strong>{{ analysis.candidate_email or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>Phone</span><strong>{{ analysis.candidate_phone or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>Address</span><strong>{{ analysis.candidate_address or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>LinkedIn</span><strong>{{ analysis.candidate_linkedin or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>GitHub</span><strong>{{ analysis.candidate_github or 'N/A' }}</strong></div>
+                    <div class="info-item"><span>Word Count</span><strong>{{ analysis.word_count }}</strong></div>
+                    <div class="info-item"><span>Sentences</span><strong>{{ analysis.sentence_count }}</strong></div>
+                </div>
+                <hr>
+                <h6 class="mb-2">Technical Skills</h6>
+                <div class="skill-tags">
+                    {% for skill in analysis.technical_skills[:15] %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% else %}
+                    <span class="text-muted small">No technical skills found</span>
+                    {% endfor %}
+                </div>
+                <h6 class="mb-2 mt-3">Soft Skills</h6>
+                <div class="skill-tags">
+                    {% for skill in analysis.soft_skills[:10] %}
+                    <span class="skill-tag soft">{{ skill }}</span>
+                    {% else %}
+                    <span class="text-muted small">No soft skills found</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Scores -->
+        <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-chart-bar me-2"></i>Section Analysis</h5>
+                <div class="section-scores">
+                    {% for section in sections %}
+                    <div class="section-score">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>{{ section.name }}</span>
+                            <strong class="{{ 'text-success' if section.score >= 70 else 'text-warning' if section.score >= 40 else 'text-danger' }}">{{ section.score }}%</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar {{ 'bg-success' if section.score >= 70 else 'bg-warning' if section.score >= 40 else 'bg-danger' }}" style="width: {{ section.score }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if analysis.missing_sections %}
+                <div class="alert alert-warning mt-3 mb-0">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Missing Sections:</strong>
+                    {% for ms in analysis.missing_sections %}<span class="badge bg-warning text-dark ms-1">{{ ms }}</span>{% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Strengths & Weaknesses -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title text-success"><i class="fas fa-thumbs-up me-2"></i>Strengths</h5>
+                <ul class="analysis-list">
+                    {% for strength in analysis.strengths %}
+                    <li><i class="fas fa-check-circle text-success me-2"></i>{{ strength }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title text-danger"><i class="fas fa-thumbs-down me-2"></i>Weaknesses</h5>
+                <ul class="analysis-list">
+                    {% for weakness in analysis.weaknesses %}
+                    <li><i class="fas fa-times-circle text-danger me-2"></i>{{ weakness }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="col-12" data-aos="fade-up">
+            <div class="glass-card p-4">
+                <h5 class="card-title text-info"><i class="fas fa-lightbulb me-2"></i>AI Suggestions</h5>
+                <div class="row g-3">
+                    {% for suggestion in analysis.suggestions %}
+                    <div class="col-md-6">
+                        <div class="suggestion-item glass-card p-3">
+                            <i class="fas fa-arrow-right text-info me-2"></i>{{ suggestion }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Missing Keywords & Formatting -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-key me-2"></i>Missing Keywords</h5>
+                <div class="skill-tags">
+                    {% for kw in analysis.missing_keywords %}
+                    <span class="skill-tag missing">{{ kw }}</span>
+                    {% else %}
+                    <span class="text-muted small">No missing keywords!</span>
+                    {% endfor %}
+                </div>
+                <hr>
+                <h6 class="mb-2">Action Verbs Detected</h6>
+                <div class="skill-tags">
+                    {% for verb in analysis.action_verbs[:10] %}
+                    <span class="skill-tag action">{{ verb }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-tools me-2"></i>Formatting Issues</h5>
+                <ul class="analysis-list">
+                    {% for issue in analysis.formatting_issues %}
+                    <li><i class="fas fa-wrench text-warning me-2"></i>{{ issue }}</li>
+                    {% else %}
+                    <li class="text-success"><i class="fas fa-check-circle me-2"></i>No major formatting issues!</li>
+                    {% endfor %}
+                </ul>
+
+                <h5 class="mt-4 mb-2">Extracted Sections</h5>
+                <div class="resume-sections">
+                    {% if analysis.education %}<div class="section-item"><i class="fas fa-graduation-cap"></i><strong>Education</strong><span>{{ analysis.education|length }} entries</span></div>{% endif %}
+                    {% if analysis.experience %}<div class="section-item"><i class="fas fa-briefcase"></i><strong>Experience</strong><span>{{ analysis.experience|length }} entries</span></div>{% endif %}
+                    {% if analysis.projects %}<div class="section-item"><i class="fas fa-code-branch"></i><strong>Projects</strong><span>{{ analysis.projects|length }} entries</span></div>{% endif %}
+                    {% if analysis.certifications %}<div class="section-item"><i class="fas fa-certificate"></i><strong>Certifications</strong><span>{{ analysis.certifications|length }} entries</span></div>{% endif %}
+                    {% if analysis.languages %}<div class="section-item"><i class="fas fa-language"></i><strong>Languages</strong><span>{{ analysis.languages|length }} entries</span></div>{% endif %}
+                    {% if analysis.internships %}<div class="section-item"><i class="fas fa-user-graduate"></i><strong>Internships</strong><span>{{ analysis.internships|length }} entries</span></div>{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const gauge = document.querySelector('.gauge-fill[data-score]');
+        if (gauge) {
+            const score = parseFloat(gauge.dataset.score);
+            const circumference = 502;
+            const offset = circumference - (score / 100) * circumference;
+            setTimeout(() => { gauge.style.strokeDashoffset = offset; }, 300);
+        }
+    });
+</script>
+{% endblock %}

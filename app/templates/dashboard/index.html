@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Welcome, {{ current_user.first_name or current_user.username }}!</h1>
+        <p>Here's an overview of your resume analytics</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <!-- Stats Cards -->
+    <div class="row g-4 stats-row">
+        <div class="col-md-6 col-xl-3" data-aos="fade-up">
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon purple"><i class="fas fa-file-alt"></i></div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value count-up" data-target="{{ total_resumes }}">0</div>
+                    <div class="stat-card-label">Total Resumes</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value count-up" data-target="{{ analyzed }}">0</div>
+                    <div class="stat-card-label">Analyzed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon blue"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value">{{ avg_score }}%</div>
+                    <div class="stat-card-label">Avg ATS Score</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-card glass-card">
+                <div class="stat-card-icon orange"><i class="fas fa-percentage"></i></div>
+                <div class="stat-card-info">
+                    <div class="stat-card-value count-up" data-target="{{ job_matches }}">0</div>
+                    <div class="stat-card-label">Job Matches</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions mt-4" data-aos="fade-up">
+        <a href="{{ url_for('upload.upload') }}" class="btn btn-gradient"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Resume</a>
+        <a href="{{ url_for('builder.index') }}" class="btn btn-outline-light"><i class="fas fa-file-alt me-2"></i>Build Resume</a>
+        <a href="{{ url_for('career.index') }}" class="btn btn-outline-light"><i class="fas fa-robot me-2"></i>Career Assistant</a>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="row g-4 mt-2">
+        <!-- ATS Gauge + Health -->
+        <div class="col-lg-5" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-tachometer-alt me-2"></i>ATS Score</h5>
+                {% if latest %}
+                <div class="score-gauge large">
+                    <svg viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="80" class="gauge-bg"/>
+                        <circle cx="100" cy="100" r="80" class="gauge-fill {{ 'gauge-excellent' if latest.overall_score >= 80 else 'gauge-good' if latest.overall_score >= 60 else 'gauge-average' if latest.overall_score >= 40 else 'gauge-poor' }}" data-score="{{ latest.overall_score }}" style="stroke-dashoffset: 502;"/>
+                        <text x="100" y="100" class="gauge-value" text-anchor="middle" dy="35">{{ latest.overall_score }}%</text>
+                    </svg>
+                </div>
+                <div class="health-meter mt-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Resume Health</span>
+                        <span class="health-badge {{ latest.health_status }}">{{ latest.health_status|capitalize }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar {{ 'bg-success' if latest.overall_score >= 80 else 'bg-warning' if latest.overall_score >= 60 else 'bg-danger' }}" style="width: {{ latest.overall_score }}%"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No analysis yet. Upload your resume to get started!</p>
+                    <a href="{{ url_for('upload.upload') }}" class="btn btn-gradient btn-sm">Upload Resume</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Skill Distribution Pie -->
+        <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-chart-pie me-2"></i>Skill Distribution</h5>
+                {% if latest %}
+                <div class="chart-container"><canvas id="skillPieChart"></canvas></div>
+                {% else %}
+                <div class="text-center py-5 text-muted">Upload a resume to see skill distribution</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Radar Chart -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-spider me-2"></i>Score Breakdown</h5>
+                {% if latest %}
+                <div class="chart-container"><canvas id="radarChart"></canvas></div>
+                {% else %}
+                <div class="text-center py-5 text-muted">No data available</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Resumes -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-history me-2"></i>Recent Resumes</h5>
+                {% if recent_resumes %}
+                <ul class="list-group list-group-flush">
+                    {% for resume in recent_resumes %}
+                    <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-file-pdf text-danger me-2"></i>
+                            <span>{{ resume.original_name }}</span>
+                        </div>
+                        <div>
+                            {% if resume.analysis %}
+                            <span class="health-badge {{ resume.analysis.health_status }}">{{ resume.analysis.health_status|capitalize }}</span>
+                            <a href="{{ url_for('analysis.view', resume_id=resume.id) }}" class="btn btn-sm btn-outline-light ms-2"><i class="fas fa-eye"></i></a>
+                            {% else %}
+                            <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-5 text-muted">No resumes uploaded yet</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Activity Feed</h5>
+                {% if activities %}
+                <div class="activity-feed">
+                    {% for activity in activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon {{ activity.color }}"><i class="fas {{ activity.icon }}"></i></div>
+                        <div class="activity-content">
+                            <strong>{{ activity.action }}</strong>
+                            <p class="small mb-0">{{ activity.description }}</p>
+                            <small class="text-muted">{{ activity.created_at.strftime('%b %d, %H:%M') }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">No recent activity</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Job Matches -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-percentage me-2"></i>Recent Job Matches</h5>
+                {% if recent_jobs %}
+                <div class="job-match-list">
+                    {% for job in recent_jobs %}
+                    <div class="job-match-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ job.job_title or 'Job Match' }}</strong>
+                            {% if job.company_name %}<span class="text-muted small"> @ {{ job.company_name }}</span>{% endif %}
+                        </div>
+                        <span class="match-badge">{{ job.match_percentage }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <p>No job matches yet.</p>
+                    <a href="{{ url_for('dashboard.history') }}" class="btn btn-outline-light btn-sm">Select a Resume</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if latest %}
+<script>
+    // Skill Distribution Pie Chart
+    const skillData = {{ skill_distribution|tojson }};
+    const ctxPie = document.getElementById('skillPieChart');
+    if (ctxPie) {
+        new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: skillData.map(s => s.label),
+                datasets: [{
+                    data: skillData.map(s => s.value),
+                    backgroundColor: ['#6c5ce7', '#00b894', '#0984e3', '#fdcb6e', '#e17055'],
+                    borderWidth: 2,
+                    borderColor: '#1a1a2e'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#ccc' } } }
+            }
+        });
+    }
+
+    // Radar Chart
+    const radarData = {{ radar_scores|tojson }};
+    const ctxRadar = document.getElementById('radarChart');
+    if (ctxRadar) {
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: radarData.map(r => r.label),
+                datasets: [{
+                    label: 'Score',
+                    data: radarData.map(r => r.value),
+                    backgroundColor: 'rgba(108, 92, 231, 0.2)',
+                    borderColor: '#6c5ce7',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#6c5ce7'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { r: { beginAtZero: true, max: 100, ticks: { color: '#ccc', backdropColor: 'transparent' }, grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' } } },
+                plugins: { legend: { labels: { color: '#ccc' } } }
+            }
+        });
+    }
+
+    // Animate gauge
+    document.addEventListener('DOMContentLoaded', function() {
+        const gauge = document.querySelector('.gauge-fill[data-score]');
+        if (gauge) {
+            const score = parseFloat(gauge.dataset.score);
+            const circumference = 502;
+            const offset = circumference - (score / 100) * circumference;
+            gauge.style.strokeDashoffset = offset;
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

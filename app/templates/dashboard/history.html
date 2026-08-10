@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Resume History{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Resume History</h1>
+        <p>All your uploaded resumes and analyses</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="glass-card p-4" data-aos="fade-up">
+        {% if resumes %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Resume</th>
+                        <th>Status</th>
+                        <th>ATS Score</th>
+                        <th>Health</th>
+                        <th>Uploaded</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resume in resumes %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                <div>
+                                    <strong>{{ resume.original_name }}</strong>
+                                    <div class="small text-muted">{{ resume.file_size }} KB • {{ resume.page_count }} pg</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if resume.status == 'completed' %}<span class="badge bg-success">Analyzed</span>
+                            {% elif resume.status == 'analyzing' %}<span class="badge bg-warning">Analyzing</span>
+                            {% elif resume.status == 'failed' %}<span class="badge bg-danger">Failed</span>
+                            {% else %}<span class="badge bg-secondary">Uploaded</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if resume.analysis %}
+                            <strong class="{{ 'text-success' if resume.analysis.overall_score >= 80 else 'text-warning' if resume.analysis.overall_score >= 60 else 'text-danger' }}">
+                                {{ resume.analysis.overall_score }}%
+                            </strong>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if resume.analysis %}
+                            <span class="health-badge {{ resume.analysis.health_status }}">{{ resume.analysis.health_status|capitalize }}</span>
+                            {% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        <td class="small text-muted">{{ resume.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if resume.analysis %}
+                                <a href="{{ url_for('analysis.view', resume_id=resume.id) }}" class="btn btn-outline-light" title="View Analysis"><i class="fas fa-eye"></i></a>
+                                <a href="{{ url_for('analysis.job_match', resume_id=resume.id) }}" class="btn btn-outline-info" title="Job Match"><i class="fas fa-percentage"></i></a>
+                                <a href="{{ url_for('reports.analysis_report', resume_id=resume.id) }}" class="btn btn-outline-success" title="Report"><i class="fas fa-file-pdf"></i></a>
+                                {% else %}
+                                <form method="POST" action="{{ url_for('analysis.reanalyze', resume_id=resume.id) }}" class="d-inline">
+                                    <button class="btn btn-outline-warning" title="Retry"><i class="fas fa-redo"></i></button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h5>No Resumes Yet</h5>
+            <p class="text-muted">Upload your first resume to get AI-powered analysis.</p>
+            <a href="{{ url_for('upload.upload') }}" class="btn btn-gradient"><i class="fas fa-cloud-upload-alt me-2"></i>Upload Resume</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Account Settings</h1>
+        <p>Manage your preferences and security</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="glass-card p-4" data-aos="fade-up">
+                <h4 class="mb-4"><i class="fas fa-cog me-2"></i>Preferences</h4>
+                <form method="POST" action="{{ url_for('auth.settings') }}" novalidate>
+                    {{ settings_form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">Theme</label>
+                        {{ settings_form.theme_preference(class='form-select') }}
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        {{ settings_form.email_notifications(class='form-check-input') }}
+                        {{ settings_form.email_notifications.label(class='form-check-label') }}
+                    </div>
+                    <button type="submit" class="btn btn-gradient"><i class="fas fa-save me-2"></i>Save Settings</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="glass-card p-4" data-aos="fade-up" data-aos-delay="100">
+                <h4 class="mb-4"><i class="fas fa-lock me-2"></i>Change Password</h4>
+                <form method="POST" action="{{ url_for('auth.change_password') }}" novalidate>
+                    {{ password_form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        {{ password_form.current_password(class='form-control') }}
+                        {% for error in password_form.current_password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        {{ password_form.new_password(class='form-control') }}
+                        {% for error in password_form.new_password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        {{ password_form.confirm_new_password(class='form-control') }}
+                        {% for error in password_form.confirm_new_password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-warning"><i class="fas fa-key me-2"></i>Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

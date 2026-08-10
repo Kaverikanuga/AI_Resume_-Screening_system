@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Match Result{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text">Match Result</h1>
+        <p>{{ match.job_title or 'Job Match' }}{% if match.company_name %} @ {{ match.company_name }}{% endif %}</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <!-- Overall Match -->
+        <div class="col-lg-4" data-aos="fade-up">
+            <div class="glass-card p-4 text-center h-100">
+                <h5 class="card-title"><i class="fas fa-percentage me-2"></i>Match Score</h5>
+                <div class="big-match-score">{{ match.match_percentage }}%</div>
+                <p class="text-muted">Resume match percentage</p>
+                <hr>
+                <div class="text-start">
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>ATS Compatibility</span><strong>{{ match.ats_compatibility }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-info" style="width: {{ match.ats_compatibility }}%"></div></div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between"><span>Job Readiness</span><strong>{{ match.job_readiness_score }}%</strong></div>
+                        <div class="progress"><div class="progress-bar bg-success" style="width: {{ match.job_readiness_score }}%"></div></div>
+                    </div>
+                </div>
+                <hr>
+                <p class="small mb-1"><i class="fas fa-money-bill-wave me-1 text-success"></i><strong>Salary Estimate:</strong></p>
+                <p class="lead">{{ match.salary_estimate }}</p>
+            </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 mb-4">
+                <h5 class="card-title text-success"><i class="fas fa-check-circle me-2"></i>Matching Skills</h5>
+                <div class="skill-tags">
+                    {% for skill in match.matching_skills %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% else %}
+                    <span class="text-muted">No matching skills found</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="glass-card p-4">
+                <h5 class="card-title text-danger"><i class="fas fa-times-circle me-2"></i>Missing Skills</h5>
+                {% if match.missing_skills %}
+                <div class="skill-tags">
+                    {% for skill in match.missing_skills %}
+                    <span class="skill-tag missing">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-success mb-0"><i class="fas fa-check me-2"></i>Excellent! All required skills are present.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Skill Gaps -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Skill Gap Analysis</h5>
+                <div class="gap-list">
+                    {% for gap in match.skill_gaps[:6] %}
+                    <div class="gap-item glass-card p-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ gap.skill }}</strong>
+                            <span class="badge {{ 'bg-danger' if gap.importance == 'High' else 'bg-warning' }}">{{ gap.importance }}</span>
+                        </div>
+                        <p class="small text-muted mt-1 mb-0">{{ gap.suggestion }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Suggestions -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title text-info"><i class="fas fa-graduation-cap me-2"></i>Learning Suggestions</h5>
+                <ul class="analysis-list">
+                    {% for s in match.learning_suggestions %}
+                    <li><i class="fas fa-arrow-right text-info me-2"></i>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Interview Questions -->
+        <div class="col-lg-6" data-aos="fade-up">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title"><i class="fas fa-comments me-2"></i>Interview Questions</h5>
+                <ul class="analysis-list">
+                    {% for q in match.interview_questions %}
+                    <li><i class="fas fa-question-circle text-primary me-2"></i>{{ q }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Recruiter Suggestions -->
+        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4 h-100">
+                <h5 class="card-title text-success"><i class="fas fa-user-tie me-2"></i>Recruiter Suggestions</h5>
+                <ul class="analysis-list">
+                    {% for s in match.recruiter_suggestions %}
+                    <li><i class="fas fa-check-circle text-success me-2"></i>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Developer Portfolio{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1 class="gradient-text"><i class="fas fa-code me-2"></i>Developer Portfolio</h1>
+        <p>About the developer behind this platform</p>
+    </div>
+</div>
+
+<div class="container section-pad-top">
+    <div class="row g-4">
+        <div class="col-lg-4" data-aos="fade-up">
+            <div class="glass-card p-4 text-center">
+                <div class="dev-avatar mx-auto mb-3"><i class="fas fa-user-tie"></i></div>
+                <h4 class="fw-bold">AI Resume Screening Team</h4>
+                <p class="text-muted">Final Year Engineering Project</p>
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-github"></i></a>
+                    <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="btn btn-outline-light btn-sm"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card p-4">
+                <h5 class="card-title"><i class="fas fa-user me-2"></i>About</h5>
+                <p>This AI Resume Screening System is a comprehensive SaaS platform built as a Final Year Engineering Project. It leverages modern AI/ML techniques including Natural Language Processing (NLP), Named Entity Recognition, and machine learning to analyze resumes, score ATS compatibility, match candidates to jobs, and provide career guidance.</p>
+                <p>Built with Flask, SQLAlchemy, scikit-learn, spaCy, and Chart.js, the platform delivers a production-grade user experience with a premium dark-themed UI.</p>
+                <div class="tech-stack mt-3">
+                    <span class="skill-tag">Flask</span>
+                    <span class="skill-tag">SQLAlchemy</span>
+                    <span class="skill-tag">scikit-learn</span>
+                    <span class="skill-tag">spaCy</span>
+                    <span class="skill-tag">NLTK</span>
+                    <span class="skill-tag">Chart.js</span>
+                    <span class="skill-tag">Bootstrap</span>
+                    <span class="skill-tag">ReportLab</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+        <div class="col-md-4" data-aos="fade-up">
+            <a href="{{ url_for('portfolio.architecture') }}" class="text-decoration-none">
+                <div class="glass-card p-4 text-center h-100 hover-card">
+                    <i class="fas fa-project-diagram fa-3x mb-3 gradient-text"></i>
+                    <h5>Architecture</h5>
+                    <p class="text-muted small">System architecture and design</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <a href="{{ url_for('portfolio.docs') }}" class="text-decoration-none">
+                <div class="glass-card p-4 text-center h-100 hover-card">
+                    <i class="fas fa-book fa-3x mb-3 gradient-text"></i>
+                    <h5>Documentation</h5>
+                    <p class="text-muted small">Project documentation & ER diagram</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="glass-card p-4 text-center h-100">
+                <i class="fas fa-camera fa-3x mb-3 gradient-text"></i>
+                <h5>Features</h5>
+                <p class="text-muted small">Resume analysis, job matching, career assistant & more</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
