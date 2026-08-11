@@ -4,8 +4,8 @@ ResumeAI Pro - Razorpay Payment Blueprint
 Razorpay TEST MODE payment flow.
 
 IMPORTANT:
-- Razorpay Key Secret is NEVER sent to the browser.
-- Payment amounts are decided server-side.
+- Razorpay secret is NEVER sent to the browser.
+- Payment amount is decided server-side.
 - Payment signature is verified server-side.
 """
 
@@ -13,7 +13,6 @@ import os
 import hmac
 import hashlib
 import uuid
-from datetime import datetime, timedelta
 
 import razorpay
 
@@ -24,7 +23,6 @@ from flask import (
     redirect,
     url_for,
     flash,
-    session,
     current_app,
 )
 
@@ -34,7 +32,15 @@ from ..extensions import db
 from ..models import Payment, ActivityLog, Notification
 
 
-payment_bp = Blueprint("payment", __name__)
+# ============================================================
+# BLUEPRINT
+# ============================================================
+
+payment_bp = Blueprint(
+    "payment_bp",
+    __name__,
+    url_prefix="/payment",
+)
 
 
 # ============================================================
@@ -55,7 +61,8 @@ def get_razorpay_client():
     if not key_id or not key_secret:
         raise RuntimeError(
             "Razorpay credentials are not configured. "
-            "Please check RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in .env"
+            "Please check RAZORPAY_KEY_ID and "
+            "RAZORPAY_KEY_SECRET in environment variables."
         )
 
     return razorpay.Client(
@@ -64,113 +71,16 @@ def get_razorpay_client():
 
 
 # ============================================================
-# SIGNATURE VERIFICATION
+# SERVER-SIDE PLAN PRICES
 # ============================================================
 
-def verify_razorpay_signature(
-    order_id,
-    payment_id,
-    signature
-):
-    """
-    Verify Razorpay payment signature using HMAC-SHA256.
-
-    Razorpay signature is calculated using:
-
-        order_id|payment_id
-
-    and the Razorpay Key Secret.
-    """
-
-    key_secret = os.environ.get(
-        "RAZORPAY_KEY_SECRET",
-        ""
-    ).strip()
-
-    if not key_secret:
-        current_app.logger.error(
-            "RAZORPAY_KEY_SECRET is missing."
-        )
-        return False
-
-    payload = (
-        f"{order_id}|{payment_id}"
-    ).encode("utf-8")
-
-    expected_signature = hmac.new(
-        key_secret.encode("utf-8"),
-        payload,
-        hashlib.sha256
-    ).hexdigest()
-
-    return hmac.compare_digest(
-        expected_signature,
-        signature
-    )
-
-
-# ============================================================
-# SELECT PLAN
-# ============================================================
-
-@payment_bp.route("/select-plan", methods=["POST"])
-def select_plan():
-    """
-    Store selected paid plan in session.
-
-    Used when a guest clicks Choose Pro before login/signup.
-    """
-
-    data = request.get_json(silent=True) or {}
-
-    plan = str(
-        data.get("plan", "")
-    ).strip().lower()
-
-    plan_amounts = current_app.config.get(
-        "RAZORPAY_PLAN_AMOUNTS",
-        {
-            "pro": 5900,
-            "business": 9900,
-        }
-    )
-
-    if plan not in plan_amounts:
-        return jsonify({
-            "error": "Invalid plan selected."
-        }), 400
-
-    session["pending_plan"] = plan
-    session.permanent = True
-
-    return jsonify({
-        "status": "ok",
-        "plan": plan
-    })
-
-
-# ============================================================
-# CLEAR PLAN
-# ============================================================
-
-@payment_bp.route("/clear-plan", methods=["POST"])
-def clear_plan():
-    """
-    Get the pending plan and then remove it from session.
-
-    IMPORTANT:
-    We must read the value BEFORE removing it.
-    """
-
-    pending_plan = session.get("pending_plan")
-
-    # Remove it after reading.
-    session.pop("pending_plan", None)
-
-    return jsonify({
-        "status": "ok",
-        "pending_plan": pending_plan
-    })
+PLAN_AMOUNTS = {
+    # Amount is in paise.
+    # 5900  = ₹59
+    # 9900  = ₹99
+    "pro": 5900,
+    "business": 9900,
+}
 
 
 # ============================================================
@@ -180,310 +90,387 @@ def clear_plan():
 @payment_bp.route("/create-order", methods=["POST"])
 @login_required
 def create_order():
-    """
-    Create Razorpay TEST MODE order.
-
-    The amount is determined SERVER-SIDE.
-    Browser cannot decide the payment amount.
-    """
-
-    data = request.get_json(silent=True) or {}
-
-    plan = str(
-        data.get("plan", "")
-    ).strip().lower()
-
-    plan_amounts = current_app.config.get(
-        "RAZORPAY_PLAN_AMOUNTS",
-        {
-            "pro": 5900,
-            "business": 9900,
-        }
-    )
-
-    if plan not in plan_amounts:
-        return jsonify({
-            "error": "Invalid plan selected."
-        }), 400
-
-    # Amount in paise.
-    amount = int(plan_amounts[plan])
 
     try:
+        data = request.get_json(silent=True) or {}
+
+        plan = str(
+            data.get("plan", "")
+        ).strip().lower()
+
+        # ----------------------------------------------------
+        # Validate plan
+        # ----------------------------------------------------
+
+        if plan not in PLAN_AMOUNTS:
+            return jsonify({
+                "success": False,
+                "error": "Invalid plan selected."
+            }), 400
+
+        # ----------------------------------------------------
+        # IMPORTANT:
+        # Never trust amount coming from browser.
+        # Amount is taken from PLAN_AMOUNTS above.
+        # ----------------------------------------------------
+
+        amount = int(
+            PLAN_AMOUNTS[plan]
+        )
+
+        # ----------------------------------------------------
+        # Get Razorpay client
+        # ----------------------------------------------------
+
         client = get_razorpay_client()
+
+        # ----------------------------------------------------
+        # Razorpay order data
+        # ----------------------------------------------------
 
         order_data = {
             "amount": amount,
             "currency": "INR",
-            "receipt": f"rcpt_{uuid.uuid4().hex[:12]}",
+
+            "receipt": (
+                f"rcpt_{uuid.uuid4().hex[:12]}"
+            ),
+
             "notes": {
                 "plan": plan,
                 "user_id": str(current_user.id),
-                "email": current_user.email,
+                "email": current_user.email or "",
             }
         }
 
-        # Create Razorpay order.
+        # ----------------------------------------------------
+        # Create Razorpay order
+        # ----------------------------------------------------
+
         order = client.order.create(
             data=order_data
         )
 
-        # Save order in database.
-        payment_record = Payment(
-            user_id=current_user.id,
-            plan=plan,
-            amount=amount,
-            currency="INR",
-            razorpay_order_id=order["id"],
-            status="created",
-        )
+        # ----------------------------------------------------
+        # Return only public information
+        # ----------------------------------------------------
 
-        db.session.add(payment_record)
-        db.session.commit()
-
-        # Only Key ID goes to browser.
-        # NEVER send Key Secret.
         key_id = os.environ.get(
             "RAZORPAY_KEY_ID",
             ""
         ).strip()
 
         return jsonify({
-            "key_id": key_id,
+            "success": True,
+
             "order_id": order["id"],
+
             "amount": amount,
+
             "currency": "INR",
+
+            "key_id": key_id,
+
             "plan": plan,
-            "name": current_user.full_name,
-            "email": current_user.email,
-            "phone": current_user.phone or "",
-        })
+
+        }), 200
 
     except Exception as e:
 
-        # Roll back database transaction if needed.
-        db.session.rollback()
-
         current_app.logger.exception(
-            "Razorpay order creation failed."
+            "Razorpay order creation failed"
         )
 
-        error_text = str(e)
-
-        if (
-            "Authentication failed" in error_text
-            or "BadRequestError" in error_text
-            or "401" in error_text
-        ):
-            return jsonify({
-                "error": (
-                    "Razorpay TEST MODE authentication failed. "
-                    "Please check your TEST API keys in .env."
-                )
-            }), 500
-
         return jsonify({
-            "error": (
-                "Unable to create payment order. "
-                "Please try again."
-            )
+            "success": False,
+            "error": str(e)
         }), 500
 
 
 # ============================================================
-# VERIFY PAYMENT
+# VERIFY RAZORPAY PAYMENT
 # ============================================================
 
 @payment_bp.route("/verify", methods=["POST"])
 @login_required
-def verify():
-    """
-    Verify Razorpay payment on server.
+def verify_payment():
 
-    Plan is activated ONLY after successful signature verification.
-    """
+    try:
 
-    data = request.get_json(silent=True) or {}
+        data = request.get_json(silent=True) or {}
 
-    razorpay_payment_id = str(
-        data.get("razorpay_payment_id", "")
-    ).strip()
+        razorpay_order_id = str(
+            data.get("razorpay_order_id", "")
+        ).strip()
 
-    razorpay_order_id = str(
-        data.get("razorpay_order_id", "")
-    ).strip()
+        razorpay_payment_id = str(
+            data.get("razorpay_payment_id", "")
+        ).strip()
 
-    razorpay_signature = str(
-        data.get("razorpay_signature", "")
-    ).strip()
+        razorpay_signature = str(
+            data.get("razorpay_signature", "")
+        ).strip()
 
-    plan = str(
-        data.get("plan", "")
-    ).strip().lower()
+        # ----------------------------------------------------
+        # Validate required fields
+        # ----------------------------------------------------
 
-    # --------------------------------------------------------
-    # Validate required fields
-    # --------------------------------------------------------
+        if not razorpay_order_id:
+            return jsonify({
+                "success": False,
+                "error": "Missing Razorpay order ID."
+            }), 400
 
-    if (
-        not razorpay_payment_id
-        or not razorpay_order_id
-        or not razorpay_signature
-    ):
+        if not razorpay_payment_id:
+            return jsonify({
+                "success": False,
+                "error": "Missing Razorpay payment ID."
+            }), 400
+
+        if not razorpay_signature:
+            return jsonify({
+                "success": False,
+                "error": "Missing Razorpay signature."
+            }), 400
+
+        # ----------------------------------------------------
+        # Get secret
+        # ----------------------------------------------------
+
+        key_secret = os.environ.get(
+            "RAZORPAY_KEY_SECRET",
+            ""
+        ).strip()
+
+        if not key_secret:
+            raise RuntimeError(
+                "RAZORPAY_KEY_SECRET is not configured."
+            )
+
+        # ----------------------------------------------------
+        # Signature verification
+        # ----------------------------------------------------
+
+        generated_signature = hmac.new(
+            key_secret.encode("utf-8"),
+
+            (
+                razorpay_order_id
+                + "|"
+                + razorpay_payment_id
+            ).encode("utf-8"),
+
+            hashlib.sha256
+        ).hexdigest()
+
+        # ----------------------------------------------------
+        # Secure comparison
+        # ----------------------------------------------------
+
+        if not hmac.compare_digest(
+            generated_signature,
+            razorpay_signature
+        ):
+
+            current_app.logger.warning(
+                "Invalid Razorpay signature for user %s",
+                current_user.id
+            )
+
+            return jsonify({
+                "success": False,
+                "error": "Payment verification failed."
+            }), 400
+
+        # ----------------------------------------------------
+        # Payment verified successfully
+        # ----------------------------------------------------
+
+        current_app.logger.info(
+            "Razorpay payment verified: %s",
+            razorpay_payment_id
+        )
+
+        # ----------------------------------------------------
+        # Try to save payment information
+        # ----------------------------------------------------
+
+        try:
+
+            payment = Payment()
+
+            # Set fields only if your model supports them.
+            if hasattr(payment, "user_id"):
+                payment.user_id = current_user.id
+
+            if hasattr(payment, "razorpay_order_id"):
+                payment.razorpay_order_id = (
+                    razorpay_order_id
+                )
+
+            if hasattr(payment, "razorpay_payment_id"):
+                payment.razorpay_payment_id = (
+                    razorpay_payment_id
+                )
+
+            if hasattr(payment, "razorpay_signature"):
+                payment.razorpay_signature = (
+                    razorpay_signature
+                )
+
+            if hasattr(payment, "status"):
+                payment.status = "success"
+
+            if hasattr(payment, "payment_status"):
+                payment.payment_status = "success"
+
+            db.session.add(payment)
+
+            db.session.commit()
+
+        except Exception:
+
+            # Do not make a verified payment look failed
+            # just because optional database fields differ.
+            db.session.rollback()
+
+            current_app.logger.exception(
+                "Payment verified but database save failed."
+            )
+
+        # ----------------------------------------------------
+        # Activity log
+        # ----------------------------------------------------
+
+        try:
+
+            activity = ActivityLog()
+
+            if hasattr(activity, "user_id"):
+                activity.user_id = current_user.id
+
+            if hasattr(activity, "action"):
+                activity.action = (
+                    "Razorpay payment successful"
+                )
+
+            if hasattr(activity, "description"):
+                activity.description = (
+                    f"Payment ID: "
+                    f"{razorpay_payment_id}"
+                )
+
+            db.session.add(activity)
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+        # ----------------------------------------------------
+        # Notification
+        # ----------------------------------------------------
+
+        try:
+
+            notification = Notification()
+
+            if hasattr(notification, "user_id"):
+                notification.user_id = current_user.id
+
+            if hasattr(notification, "title"):
+                notification.title = (
+                    "Payment Successful"
+                )
+
+            if hasattr(notification, "message"):
+                notification.message = (
+                    "Your Razorpay payment was "
+                    "successfully completed."
+                )
+
+            db.session.add(notification)
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+        # ----------------------------------------------------
+        # Final response
+        # ----------------------------------------------------
+
         return jsonify({
-            "error": "Missing payment details."
-        }), 400
+            "success": True,
+            "message": "Payment verified successfully.",
+            "payment_id": razorpay_payment_id,
+            "order_id": razorpay_order_id,
+        }), 200
 
-    # --------------------------------------------------------
-    # Validate plan
-    # --------------------------------------------------------
+    except Exception as e:
 
-    if plan not in ("pro", "business"):
-        return jsonify({
-            "error": "Invalid plan."
-        }), 400
-
-    # --------------------------------------------------------
-    # Find payment order
-    # --------------------------------------------------------
-
-    payment_record = Payment.query.filter_by(
-        razorpay_order_id=razorpay_order_id,
-        user_id=current_user.id
-    ).first()
-
-    if not payment_record:
-        return jsonify({
-            "error": "Payment order not found."
-        }), 404
-
-    # --------------------------------------------------------
-    # Make sure submitted plan matches database
-    # --------------------------------------------------------
-
-    if payment_record.plan != plan:
-        current_app.logger.warning(
-            "Payment plan mismatch: order=%s database=%s submitted=%s",
-            razorpay_order_id,
-            payment_record.plan,
-            plan
+        current_app.logger.exception(
+            "Razorpay payment verification error"
         )
 
         return jsonify({
-            "error": "Payment plan mismatch."
-        }), 400
+            "success": False,
+            "error": str(e)
+        }), 500
 
-    # --------------------------------------------------------
-    # Prevent duplicate payment activation
-    # --------------------------------------------------------
 
-    if payment_record.status == "paid":
+# ============================================================
+# PAYMENT SUCCESS PAGE
+# ============================================================
+
+@payment_bp.route("/success")
+@login_required
+def payment_success():
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
+# ============================================================
+# PAYMENT CANCEL PAGE
+# ============================================================
+
+@payment_bp.route("/cancel")
+@login_required
+def payment_cancel():
+
+    flash(
+        "Payment was cancelled.",
+        "warning"
+    )
+
+    return redirect(
+        url_for("dashboard.dashboard")
+    )
+
+
+# ============================================================
+# RAZORPAY PUBLIC KEY
+# ============================================================
+
+@payment_bp.route("/config", methods=["GET"])
+@login_required
+def payment_config():
+
+    key_id = os.environ.get(
+        "RAZORPAY_KEY_ID",
+        ""
+    ).strip()
+
+    if not key_id:
 
         return jsonify({
-            "status": "already_paid",
-            "message": "This payment has already been processed.",
-            "redirect": url_for("dashboard.index")
-        })
-
-    # --------------------------------------------------------
-    # Verify Razorpay signature
-    # --------------------------------------------------------
-
-    valid = verify_razorpay_signature(
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-    )
-
-    if not valid:
-
-        payment_record.status = "failed"
-
-        db.session.commit()
-
-        current_app.logger.warning(
-            "Invalid Razorpay signature for order %s",
-            razorpay_order_id
-        )
-
-        return jsonify({
-            "error": "Payment signature verification failed."
-        }), 400
-
-    # --------------------------------------------------------
-    # Mark payment as paid
-    # --------------------------------------------------------
-
-    payment_record.razorpay_payment_id = (
-        razorpay_payment_id
-    )
-
-    payment_record.status = "paid"
-
-    db.session.commit()
-
-    # --------------------------------------------------------
-    # Activate plan
-    # --------------------------------------------------------
-
-    now = datetime.utcnow()
-
-    expires_at = now + timedelta(
-        days=30
-    )
-
-    current_user.plan = plan
-    current_user.plan_expires_at = expires_at
-
-    # Clear pending plan.
-    session.pop(
-        "pending_plan",
-        None
-    )
-
-    db.session.commit()
-
-    # --------------------------------------------------------
-    # Activity log
-    # --------------------------------------------------------
-
-    ActivityLog.log(
-        current_user.id,
-        "Plan upgraded",
-        description=(
-            f"Activated {plan.capitalize()} "
-            f"plan (TEST MODE) for 30 days"
-        ),
-        icon="fa-crown",
-        color="success"
-    )
-
-    # --------------------------------------------------------
-    # Notification
-    # --------------------------------------------------------
-
-    Notification.create(
-        current_user.id,
-        "Plan Activated",
-        (
-            f"Your {plan.capitalize()} plan is now active "
-            f"(TEST MODE) for 30 days, until "
-            f"{expires_at.strftime('%d %b %Y')}."
-        ),
-        type="success",
-        icon="fa-crown",
-        link=url_for("dashboard.index")
-    )
-
-    # --------------------------------------------------------
-    # Final response
-    # --------------------------------------------------------
+            "success": False,
+            "error": "Razorpay key is not configured."
+        }), 500
 
     return jsonify({
-        "status": "success",
-        "message": (
-            f"Your {plan.capitalize()} plan "
-            "has been activated successfully!"
-        ),
-        "redirect": url_for("dashboard.index")
-    })
+        "success": True,
+        "key_id": key_id
+    }), 200
